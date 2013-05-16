@@ -40,7 +40,7 @@ class ModelTest < ActiveSupport::TestCase
     id = create.id
     assert Email.find(id)
     sleep REDIS_TTL + 0.2
-    assert_nil Email.find(id)
+    assert_raise(RedisModel::RecordNotFound) { Email.find(id) }
   end
 
   test "should be able to update attributes" do

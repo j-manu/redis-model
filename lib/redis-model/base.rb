@@ -1,4 +1,8 @@
 module RedisModel
+
+  class RecordNotFound < StandardError
+  end
+
   module Base
     attr_writer :created_at
 
@@ -14,7 +18,11 @@ module RedisModel
 
       def find(id)
         hash = $redis.hgetall(key(id))
-        hash.present? ? new(hash) : nil
+        if hash.present?
+          new(hash)
+        else
+          raise RecordNotFound
+        end
       end
 
       def key(id)
