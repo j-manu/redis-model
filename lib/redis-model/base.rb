@@ -3,31 +3,40 @@ module RedisModel
   class RecordNotFound < StandardError
   end
 
-  module Base
-    attr_writer :created_at
+  class RecordNotSaved < StandardError
+  end
 
-    def self.included(base)
-      base.extend(ClassMethods)
+  class Base
+    extend ActiveModel::Naming
+    extend ActiveModel::Callbacks
+
+    include ActiveModel::Validations
+    include ActiveModel::Validations::Callbacks
+    include ActiveModel::Conversion
+
+    attr_accessor :id, :created_at
+
+    def self.create(attributes = {})
+      instance = new(attributes.merge({created_at: Time.zone.now}))
+      instance.save
     end
 
-    module ClassMethods
-      def create(attributes = {})
-        instance = new(attributes.merge({created_at: Time.zone.now}))
-        instance.save
-      end
+    def self.create!(attributes = {})
+      instance = new(attributes.merge({created_at: Time.zone.now}))
+      instance.save!
+    end
 
-      def find(id)
-        hash = $redis.hgetall(key(id))
-        if hash.present?
-          new(hash)
-        else
-          raise RecordNotFound
-        end
+    def self.find(id)
+      hash = $redis.hgetall(key(id))
+      if hash.present?
+        new(hash)
+      else
+        raise RecordNotFound
       end
+    end
 
-      def key(id)
-        "#{name.to_s.downcase}:#{id}"
-      end
+    def self.key(id)
+      "#{name.to_s.downcase}:#{id}"
     end
 
     def initialize(attributes = {})
@@ -50,7 +59,11 @@ module RedisModel
     end
 
     def save!
-      save
+      if save
+        self
+      else
+        raise RecordNotSaved
+      end
     end
 
     def set_attrs(attributes = {})
@@ -64,6 +77,7 @@ module RedisModel
         $redis.hset(key, attr, send(attr))
       end
       $redis.hset(key, :created_at, @created_at || Time.zone.now)
+      $redis.hset(key, :id, @id)
     end
 
     def persisted?

@@ -1,13 +1,15 @@
 require 'test_helper'
 
-class Email
-  include RedisModel::Base
-  ATTRS = [:id, :from, :to, :subject]
+class Email < RedisModel::Base
+  ATTRS = [:from, :to, :subject]
+  attr_accessor *ATTRS
+end
+
+class User < RedisModel::Base
+  ATTRS = [:name]
   attr_accessor *ATTRS
 
-  def valid?
-    true
-  end
+  validates :name, presence: true
 end
 
 
@@ -68,5 +70,24 @@ class ModelTest < ActiveSupport::TestCase
   test "should set the id of the model when retreived" do
     id = create.id
     assert_equal id, Email.find(id).id
+  end
+
+  test "should not save if validations fails" do
+    assert_raise RedisModel::RecordNotSaved do
+      User.create!
+    end
+    user = User.new
+    assert_raise RedisModel::RecordNotSaved do
+      user.save!
+    end
+  end
+
+  test "should save if validations pass" do
+    id = User.create!(name: 'Harry Potter').id
+    assert_equal id, User.find(id).id
+
+    user = User.new(name: 'Harry Potter')
+    id = user.save!.id
+    assert_equal id, User.find(id).id
   end
 end

@@ -18,5 +18,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency "redis",       ">= 2.2.2"
   gem.add_dependency 'tzinfo',     '>= 0.3'
   gem.add_dependency 'activesupport', '>= 3.2'
+  gem.add_dependency 'activemodel', '>= 3.2'
   gem.add_development_dependency "fakeredis"
 end
