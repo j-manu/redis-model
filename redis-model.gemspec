@@ -16,6 +16,7 @@ Gem::Specification.new do |gem|
   gem.version       = RedisModel::VERSION
 
   gem.add_dependency "redis",       ">= 2.2.2"
+  gem.add_dependency 'tzinfo',     '>= 0.3'
+  gem.add_dependency 'activesupport', '>= 3.2'
   gem.add_development_dependency "fakeredis"
-  gem.add_development_dependency "activesupport"
 end
