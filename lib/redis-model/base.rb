@@ -7,6 +7,8 @@ module RedisModel
   end
 
   class Base
+    extend RedisModel::JsonAttributes
+
     extend ActiveModel::Naming
     extend ActiveModel::Callbacks
 
