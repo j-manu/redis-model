@@ -5,8 +5,8 @@ class Model < RedisModel::Base
   ATTRS = [:name]
   attr_accessor(*ATTRS)
 
-  json_attr :array_field, Array
-  json_attr :hash_field, Hash
+  json_attr :array_field
+  json_attr :hash_field
 
   validates :name, presence: true
 end
