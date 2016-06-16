@@ -6,6 +6,7 @@ class Model < RedisModel::Base
   attr_accessor(*ATTRS)
 
   json_attr :array_field
+  json_attr :not_init_field
   json_attr :hash_field
 
   validates :name, presence: true
@@ -35,6 +36,8 @@ class JsonAttributesTest < ActiveSupport::TestCase
     test_data.each do |key, value|
       assert_equal(value, loaded.send(key), "#{key} is incorrect")
     end
+
+    assert_nil(loaded.not_init_field)
 
     # Clean after test
     $redis.del(model.key)

@@ -36,7 +36,7 @@ module RedisModel
       # Define getter
       define_method(name) do
         json_data = send(json_attr_name)
-        json_data ? JSON.parse(json_data) : nil
+        json_data.present? ? JSON.parse(json_data) : nil
       end
 
       # Define setter
