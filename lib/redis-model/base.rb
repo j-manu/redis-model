@@ -19,12 +19,12 @@ module RedisModel
     attr_accessor :id, :created_at
 
     def self.create(attributes = {})
-      instance = new(attributes.merge({created_at: Time.zone.now}))
+      instance = new(attributes.merge({created_at: Time.zone.now.to_f}))
       instance.save
     end
 
     def self.create!(attributes = {})
-      instance = new(attributes.merge({created_at: Time.zone.now}))
+      instance = new(attributes.merge({created_at: Time.zone.now.to_f}))
       instance.save!
     end
 
@@ -78,7 +78,7 @@ module RedisModel
       self.class::ATTRS.each do |attr|
         $redis.hset(key, attr, send(attr))
       end
-      $redis.hset(key, :created_at, @created_at || Time.zone.now)
+      $redis.hset(key, :created_at, @created_at || Time.zone.now.to_f)
       $redis.hset(key, :id, @id)
     end
 
@@ -88,7 +88,7 @@ module RedisModel
 
     def created_at
       return unless @created_at
-      Time.parse(@created_at.to_s)
+      @created_at.to_f
     end
 
     def key
